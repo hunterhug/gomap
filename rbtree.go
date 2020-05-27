@@ -336,13 +336,18 @@ func (tree *rbTree) delete(node *rbTNode) {
 		node.right = nil
 		node.left = nil
 
-		// 要删除的节点，是一个黑节点，删除后会破坏平衡，需要进行调整，调整成可以删除的状态
-		if !isRed(node) {
-			// 核心函数
-			tree.fixAfterDeletion(replacement)
-		}
+		// 单子树时删除的节点绝对是黑色的，而其唯一子节点必然是红色的
+		// 现在唯一子节点替换了被删除节点，该节点要变为黑色
+		// node's color must be black, and it's son must be red
+		// now son replace it's father, just change color to black
+		replacement.color = BLACK
 
-		// 子树的该唯一节点一定是一个红节点，不然破坏红黑树特征，所以替换后可以直接返回
+		//// 要删除的节点，是一个黑节点，删除后会破坏平衡，需要进行调整，调整成可以删除的状态
+		//if !isRed(node) {
+		//	// 核心函数
+		//	tree.fixAfterDeletion(replacement)
+		//}
+
 		return
 	}
 

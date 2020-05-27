@@ -8,7 +8,7 @@ import (
 )
 
 // loop times
-var num = 10
+var num = 1000000
 
 func init() {
 	// random seed
@@ -20,7 +20,7 @@ func main() {
 	m := gomap.New()
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
-		fmt.Println("add key:", key)
+		//fmt.Println("add key:", key)
 		// 2. put key pairs
 		m.Put(key, key)
 	}
@@ -28,11 +28,11 @@ func main() {
 	fmt.Println("map len is ", m.Len())
 
 	// 3. can iterator
-	iterator := m.Iterator()
-	for iterator.HasNext() {
-		k, v := iterator.Next()
-		fmt.Printf("Iterator key:%s,value %v\n", k, v)
-	}
+	//iterator := m.Iterator()
+	//for iterator.HasNext() {
+	//	k, v := iterator.Next()
+	//	fmt.Printf("Iterator key:%s,value %v\n", k, v)
+	//}
 
 	// 4. get key
 	key := "9"
@@ -66,13 +66,18 @@ func main() {
 	// 8. delete many
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
-		fmt.Println("delete key:", key)
+		//fmt.Println("delete key:", key)
 		m.Delete(key)
+		if m.Check() {
+			//fmt.Println("is a rb tree,len:", m.Len())
+		} else {
+			// check rb tree
+		}
 	}
 
 	// 9. key list
-	fmt.Printf("keyList:%#v,len:%d\n", m.KeyList(), m.Len())
-	fmt.Printf("keySortList:%#v,len:%d\n", m.KeySortedList(), m.Len())
+	//fmt.Printf("keyList:%#v,len:%d\n", m.KeyList(), m.Len())
+	//fmt.Printf("keySortList:%#v,len:%d\n", m.KeySortedList(), m.Len())
 
 	// 10. check is a rb tree
 	if m.Check() {
