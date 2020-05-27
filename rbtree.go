@@ -33,7 +33,7 @@ type rbTree struct {
 
 // new rbt tree map
 func NewRBTreeMap() Map {
-	return &rbTree{}
+	return new(rbTree)
 }
 
 // rbt node
@@ -278,6 +278,10 @@ func (tree *rbTree) fixAfterInsertion(node *rbTNode) {
 func (tree *rbTree) Delete(key string) {
 	tree.Lock()
 	defer tree.Unlock()
+
+	if tree.len == 0 {
+		return
+	}
 	// 查找元素是否存在，不存在则退出
 	node := tree.find(key)
 	if node == nil {

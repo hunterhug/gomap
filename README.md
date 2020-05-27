@@ -22,8 +22,8 @@ go get -v github.com/hunterhug/gomap
 
 There are:
 
-1. Standard Black-Red Tree Map(2-3-4-Tree): `gomap.New()`，`gomap.NewMap()`.
-2. [todo]AVL Tree Map: 
+1. Standard Black-Red Tree Map(2-3-4-Tree): `gomap.New()`，`gomap.NewMap()`,`gomap.NewRBMap()`.
+2. AVL Tree Map: `gomap.NewAVLMap()`.
 3. [todo]Left Leaning Red Black Tree(2-3-Tree):
 
 core api:

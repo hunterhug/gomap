@@ -28,8 +28,8 @@ go get -v github.com/hunterhug/gomap
 
 有以下几种用法:
 
-1. 使用标准红黑树(2-3-4-树): `gomap.New()`，`gomap.NewMap()`.
-2. [待做]使用AVL树: 
+1. 使用标准红黑树(2-3-4-树): `gomap.New()`，`gomap.NewMap()`，`gomap.NewRBMap()`。
+2. 使用AVL树: `gomap.NewAVLMap()`。
 3. [待做]使用左倾红黑树(2-3-树):
 
 核心 API:

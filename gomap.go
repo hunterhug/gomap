@@ -38,12 +38,22 @@ type MapIterator interface {
 
 // default map is rbt implement
 func NewMap() Map {
-	return &rbTree{}
+	return new(rbTree)
 }
 
 // default map is rbt implement
 func New() Map {
-	return &rbTree{}
+	return new(rbTree)
+}
+
+// default map is rbt implement
+func NewRBMap() Map {
+	return new(rbTree)
+}
+
+// new a avl map
+func NewAVLMap() Map {
+	return new(avlTree)
 }
 
 // compare two key

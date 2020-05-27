@@ -8,7 +8,7 @@ import (
 )
 
 // loop times
-var num = 1000000
+var num = 1000
 
 func init() {
 	// random seed
@@ -18,6 +18,7 @@ func init() {
 func main() {
 	// 1. new a map
 	m := gomap.New()
+	//m = gomap.NewAVLMap()
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
 		//fmt.Println("add key:", key)
@@ -68,11 +69,11 @@ func main() {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
 		//fmt.Println("delete key:", key)
 		m.Delete(key)
-		if m.Check() {
-			//fmt.Println("is a rb tree,len:", m.Len())
-		} else {
-			// check rb tree
-		}
+		//if m.Check() {
+		//	//fmt.Println("is a rb tree,len:", m.Len())
+		//} else {
+		//	// check rb tree
+		//}
 	}
 
 	// 9. key list
