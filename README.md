@@ -6,6 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/hunterhug/gomap)](https://goreportcard.com/report/github.com/hunterhug/gomap)
 [![GitHub issues](https://img.shields.io/github/issues/hunterhug/gomap.svg)](https://github.com/hunterhug/gomap/issues)
 
+[中文说明](/README_CN.md)
 
 Map implement by tree data struct such Black-Red Tree, AVL Tree.
 
@@ -18,6 +19,12 @@ simple get it by:
 ```
 go get -v github.com/hunterhug/gomap
 ```
+
+There are:
+
+1. Standard Black-Red Tree Map(2-3-4-Tree): `gomap.New()`，`gomap.NewMap()`.
+2. [todo]AVL Tree Map: 
+3. [todo]Left Leaning Red Black Tree(2-3-Tree):
 
 core api:
 
@@ -49,6 +56,8 @@ type MapIterator interface {
 ```
 
 ## Example
+
+some example below:
 
 ```go
 package main
