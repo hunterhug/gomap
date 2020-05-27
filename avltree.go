@@ -27,6 +27,21 @@ type avlTreeNode struct {
 	right  *avlTreeNode // 右字树
 }
 
+// cal tree height
+//func height(node *avlTreeNode) int64 {
+//	if node == nil {
+//		return 0
+//	}
+//
+//	lh := height(node.left)
+//	rh := height(node.right)
+//	if lh > rh {
+//		return lh + 1
+//	} else {
+//		return rh + 1
+//	}
+//}
+
 // 更新节点的树高度
 func (node *avlTreeNode) updateHeight() {
 	if node == nil {
@@ -40,6 +55,9 @@ func (node *avlTreeNode) updateHeight() {
 	if node.right != nil {
 		rightHeight = node.right.height
 	}
+
+	//leftHeight, rightHeight := height(node.left), height(node.right)
+
 	// 哪个子树高算哪棵的
 	maxHeight := leftHeight
 	if rightHeight > maxHeight {
@@ -51,6 +69,7 @@ func (node *avlTreeNode) updateHeight() {
 
 // 计算平衡因子
 func (node *avlTreeNode) balanceFactor() int64 {
+	//return height(node.left) - height(node.right)
 	var leftHeight, rightHeight int64 = 0, 0
 	if node.left != nil {
 		leftHeight = node.left.height
@@ -302,7 +321,6 @@ func (tree *avlTree) Delete(key string) {
 
 }
 
-// todo bug
 func (node *avlTreeNode) delete(key string) *avlTreeNode {
 	if node == nil {
 		// 如果是空树，直接返回
@@ -387,17 +405,17 @@ func (node *avlTreeNode) delete(key string) *avlTreeNode {
 	// 左右子树递归删除节点后需要平衡
 	var newNode *avlTreeNode
 	// 相当删除了右子树的节点，左边比右边高了，不平衡
-	if node.balanceFactor() == 2 {
+	if cmp > 0 && node.balanceFactor() == 2 {
 		//fmt.Println("l-r=2 and l:", node.left.balanceFactor())
-		if node.left.balanceFactor() == 1 {
+		if node.left.balanceFactor() >= 0 { // why >0 will err must be checking
 			newNode = rightRotation(node)
 		} else {
 			newNode = leftRightRotation(node)
 		}
 		//  相当删除了左子树的节点，右边比左边高了，不平衡
-	} else if node.balanceFactor() == -2 {
+	} else if cmp < 0 && node.balanceFactor() == -2 {
 		//fmt.Println("l-r=-2 and l:", node.right.balanceFactor())
-		if node.right.balanceFactor() == -1 {
+		if node.right.balanceFactor() <= 0 {
 			newNode = leftRotation(node)
 		} else {
 			newNode = rightLeftRotation(node)
