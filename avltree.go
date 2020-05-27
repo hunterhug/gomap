@@ -12,7 +12,6 @@ import (
 
 // AVL Tree
 // Use recursion.
-// todo bug
 type avlTree struct {
 	root       *avlTreeNode // 树根节点
 	len        int64        // tree key pairs num
@@ -64,6 +63,12 @@ func (node *avlTreeNode) balanceFactor() int64 {
 
 // 单右旋操作，看图说话
 func rightRotation(Root *avlTreeNode) *avlTreeNode {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("%#v\n,l:%#v\n,r:%#v\n", Root, Root.left, Root.right)
+			panic(err)
+		}
+	}()
 	// 只有Pivot和B，Root位置变了
 	Pivot := Root.left
 	B := Pivot.right
@@ -78,6 +83,12 @@ func rightRotation(Root *avlTreeNode) *avlTreeNode {
 
 // 单左旋操作，看图说话
 func leftRotation(Root *avlTreeNode) *avlTreeNode {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("%#v\n,l:%#v\n,r:%#v\n", Root, Root.left, Root.right)
+			panic(err)
+		}
+	}()
 	// 只有Pivot和B，Root位置变了
 	Pivot := Root.right
 	B := Pivot.left
@@ -291,6 +302,7 @@ func (tree *avlTree) Delete(key string) {
 
 }
 
+// todo bug
 func (node *avlTreeNode) delete(key string) *avlTreeNode {
 	if node == nil {
 		// 如果是空树，直接返回

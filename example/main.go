@@ -18,7 +18,7 @@ func init() {
 func main() {
 	// 1. new a map
 	m := gomap.New()
-	//m = gomap.NewAVLMap()
+	m = gomap.NewAVLMap()
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
 		//fmt.Println("add key:", key)
