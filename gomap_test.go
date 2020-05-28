@@ -18,7 +18,7 @@ func TestNew(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 	// 1. new a map
 	m := New()
-	m = NewAVLMap()
+	//m = NewAVLMap()
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
 		//fmt.Println("add key:", key)

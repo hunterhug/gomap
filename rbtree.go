@@ -340,9 +340,16 @@ func (tree *rbTree) delete(node *rbTNode) {
 		node.right = nil
 		node.left = nil
 
+		//  case 1: not enter this logic
+		//      R(del)
+		//    B   B
+		//
+		//  case 2: node's color must be black, and it's son must be red
+		//    B(del)     B(del)
+		//  R  O       O   R
+		//
 		// 单子树时删除的节点绝对是黑色的，而其唯一子节点必然是红色的
 		// 现在唯一子节点替换了被删除节点，该节点要变为黑色
-		// node's color must be black, and it's son must be red
 		// now son replace it's father, just change color to black
 		replacement.color = BLACK
 
@@ -389,12 +396,12 @@ func (tree *rbTree) fixAfterDeletion(node *rbTNode) {
 			// 找出兄弟
 			brother := rightOf(parentOf(node))
 
-			// 兄弟是红色的，对应图例1，那么兄弟变黑，父亲变红，然后对父亲左旋，进入图例23
+			// 兄弟是红色的，对应图例1，那么兄弟变黑，父亲变红，然后对父亲左旋，进入图例21,22,23
 			if isRed(brother) {
 				setColor(brother, BLACK)
 				setColor(parentOf(node), RED)
 				tree.rotateLeft(parentOf(node))
-				brother = rightOf(parentOf(node)) // 图例1调整后进入图例23，兄弟此时变了
+				brother = rightOf(parentOf(node)) // 图例1调整后进入图例21,22,23，兄弟此时变了
 			}
 
 			// 兄弟是黑色的，对应图例21，22，23
@@ -424,12 +431,12 @@ func (tree *rbTree) fixAfterDeletion(node *rbTNode) {
 			// 找出兄弟
 			brother := leftOf(parentOf(node))
 
-			// 兄弟是红色的，对应图例3，那么兄弟变黑，父亲变红，然后对父亲右旋，进入图例43
+			// 兄弟是红色的，对应图例3，那么兄弟变黑，父亲变红，然后对父亲右旋，进入图例41,42,43
 			if isRed(brother) {
 				setColor(brother, BLACK)
 				setColor(parentOf(node), RED)
 				tree.rotateRight(parentOf(node))
-				brother = leftOf(parentOf(node)) // 图例3调整后进入图例43，兄弟此时变了
+				brother = leftOf(parentOf(node)) // 图例3调整后进入图例41,42,43，兄弟此时变了
 			}
 
 			// 兄弟是黑色的，对应图例41，42，43
