@@ -149,3 +149,22 @@ func main() {
 	}
 }
 ```
+
+## 性能测试
+
+```go
+go test -run="bench_test.go" -test.bench=".*" -test.benchmem=1 -count=1
+
+BenchmarkBRTMapPut-4             1000000              2076 ns/op              95 B/op          3 allocs/op
+BenchmarkGolangMapPut-4          1580353               696 ns/op             139 B/op          3 allocs/op
+BenchmarkBRTMapDelete-4          1000000              1134 ns/op              16 B/op          2 allocs/op
+BenchmarkGolangMapDelete-4       4215994               293 ns/op              16 B/op          2 allocs/op
+BenchmarkBRTMapRandom-4           675942              3547 ns/op             163 B/op          8 allocs/op
+BenchmarkGolangMapRandom-4        650377              1720 ns/op             225 B/op          8 allocs/op
+```
+
+如果对程序内存空间的占用要求比较高，在存储大量键值对情况下，不想浪费内存，可以使用二叉查找树实现的 `Map`。
+
+因为拉链法实现的 `golang map` 速度肯定更快，如果资源充足，直接使用官方 `map` 即可。
+
+空间换时间，还是时间换空间，这是一个问题。
