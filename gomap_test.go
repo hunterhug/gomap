@@ -13,20 +13,74 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	rw := make(map[string]interface{})
+
 	// loop times
 	var num = 10000
+	randNum := 100000000
 	rand.Seed(time.Now().Unix())
 	// 1. new a map
 	m := New()
-	//m = NewAVLMap()
+	m = NewAVLMap()
 	for i := 0; i < num; i++ {
-		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
 		//fmt.Println("add key:", key)
 		// 2. put key pairs
-		m.Put(key, key)
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+		rw[key] = xx
+		if m.Check() {
+			//fmt.Println("is a rb tree,len:", m.Len())
+		} else {
+			fmt.Println("add")
+			return
+			// check rb tree
+		}
 	}
 
-	fmt.Println("map len is ", m.Len())
+	if m.Check() {
+		fmt.Println("is a rb tree,len:", m.Len())
+	}
+
+	for k, v := range rw {
+		vv, ok := m.Get(k)
+		if !ok {
+			fmt.Println("err")
+			return
+		}
+
+		if vv != v {
+			fmt.Println("err", vv, v)
+			return
+		}
+	}
+
+	// 8. delete many
+	for i := 0; i < num; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		//fmt.Println("delete key:", key)
+		m.Delete(key)
+		delete(rw, key)
+		if m.Check() {
+			//fmt.Println("is a rb tree,len:", m.Len())
+		} else {
+			return
+			// check rb tree
+		}
+	}
+
+	for k, v := range rw {
+		vv, ok := m.Get(k)
+		if !ok {
+			fmt.Println("err")
+			return
+		}
+
+		if vv != v {
+			fmt.Println("err", vv, v)
+			return
+		}
+	}
 
 	// 3. can iterator
 	//iterator := m.Iterator()
@@ -66,33 +120,38 @@ func TestNew(t *testing.T) {
 
 	// 8. delete many
 	for i := 0; i < num; i++ {
-		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
 		//fmt.Println("delete key:", key)
-		m.Delete(key)
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+		rw[key] = xx
 		if m.Check() {
-			//fmt.Println("is a rb tree,len:", m.Len())
+			//	//fmt.Println("is a rb tree,len:", m.Len())
 		} else {
+			// check rb tree
+		}
+
+		key = fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		m.Delete(key)
+		delete(rw, key)
+		if m.Check() {
+			//	//fmt.Println("is a rb tree,len:", m.Len())
+		} else {
+			return
 			// check rb tree
 		}
 	}
 
-	// 8. delete many
-	for i := 0; i < num; i++ {
-		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
-		//fmt.Println("delete key:", key)
-		m.Put(key, key)
-		if m.Check() {
-			//	//fmt.Println("is a rb tree,len:", m.Len())
-		} else {
-			// check rb tree
+	for k, v := range rw {
+		vv, ok := m.Get(k)
+		if !ok {
+			fmt.Println("err")
+			return
 		}
 
-		key = fmt.Sprintf("%d", rand.Int63n(int64(num)))
-		m.Delete(key)
-		if m.Check() {
-			//	//fmt.Println("is a rb tree,len:", m.Len())
-		} else {
-			// check rb tree
+		if vv != v {
+			fmt.Println("err", vv, v)
+			return
 		}
 	}
 

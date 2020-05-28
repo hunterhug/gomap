@@ -81,7 +81,7 @@ func (node *avlTreeNode) balanceFactor() int64 {
 }
 
 // 单右旋操作，看图说话
-func rightRotation(Root *avlTreeNode) *avlTreeNode {
+func (_ *avlTreeNode) rightRotation(Root *avlTreeNode) *avlTreeNode {
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Printf("%#v\n,l:%#v\n,r:%#v\n", Root, Root.left, Root.right)
@@ -101,7 +101,7 @@ func rightRotation(Root *avlTreeNode) *avlTreeNode {
 }
 
 // 单左旋操作，看图说话
-func leftRotation(Root *avlTreeNode) *avlTreeNode {
+func (_ *avlTreeNode) leftRotation(Root *avlTreeNode) *avlTreeNode {
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Printf("%#v\n,l:%#v\n,r:%#v\n", Root, Root.left, Root.right)
@@ -121,15 +121,15 @@ func leftRotation(Root *avlTreeNode) *avlTreeNode {
 }
 
 // 先左后右旋操作，看图说话
-func leftRightRotation(node *avlTreeNode) *avlTreeNode {
-	node.left = leftRotation(node.left)
-	return rightRotation(node)
+func (_ *avlTreeNode) leftRightRotation(node *avlTreeNode) *avlTreeNode {
+	node.left = node.leftRotation(node.left)
+	return node.rightRotation(node)
 }
 
 // 先右后左旋操作，看图说话
-func rightLeftRotation(node *avlTreeNode) *avlTreeNode {
-	node.right = rightRotation(node.right)
-	return leftRotation(node)
+func (_ *avlTreeNode) rightLeftRotation(node *avlTreeNode) *avlTreeNode {
+	node.right = node.rightRotation(node.right)
+	return node.leftRotation(node)
 }
 
 // 添加元素
@@ -141,9 +141,11 @@ func (tree *avlTree) Put(key string, value interface{}) {
 	add := false
 	if tree.root != nil {
 		node := tree.root.find(key)
-		if node != nil {
+		if node == nil {
 			add = true
 		}
+	} else {
+		add = true
 	}
 
 	// 往树根添加元素，会返回新的树根
@@ -180,10 +182,10 @@ func (node *avlTreeNode) put(key string, value interface{}) *avlTreeNode {
 			cmp1 := compare(key, node.right.k)
 			if cmp1 > 0 {
 				// 表示在右子树上插上右儿子导致失衡，需要单左旋：
-				newTreeNode = leftRotation(node)
+				newTreeNode = node.leftRotation(node)
 			} else {
 				//表示在右子树上插上左儿子导致失衡，先右后左旋：
-				newTreeNode = rightLeftRotation(node)
+				newTreeNode = node.rightLeftRotation(node)
 			}
 		}
 	} else {
@@ -196,10 +198,10 @@ func (node *avlTreeNode) put(key string, value interface{}) *avlTreeNode {
 			cmp1 := compare(key, node.left.k)
 			if cmp1 < 0 {
 				// 表示在左子树上插上左儿子导致失衡，需要单右旋：
-				newTreeNode = rightRotation(node)
+				newTreeNode = node.rightRotation(node)
 			} else {
 				//表示在左子树上插上右儿子导致失衡，先左后右旋：
-				newTreeNode = leftRightRotation(node)
+				newTreeNode = node.leftRightRotation(node)
 			}
 		}
 	}
@@ -408,17 +410,17 @@ func (node *avlTreeNode) delete(key string) *avlTreeNode {
 	if cmp > 0 && node.balanceFactor() == 2 {
 		//fmt.Println("l-r=2 and l:", node.left.balanceFactor())
 		if node.left.balanceFactor() >= 0 { // why >0 will err must be checking
-			newNode = rightRotation(node)
+			newNode = node.rightRotation(node)
 		} else {
-			newNode = leftRightRotation(node)
+			newNode = node.leftRightRotation(node)
 		}
 		//  相当删除了左子树的节点，右边比左边高了，不平衡
 	} else if cmp < 0 && node.balanceFactor() == -2 {
 		//fmt.Println("l-r=-2 and l:", node.right.balanceFactor())
 		if node.right.balanceFactor() <= 0 {
-			newNode = leftRotation(node)
+			newNode = node.leftRotation(node)
 		} else {
-			newNode = rightLeftRotation(node)
+			newNode = node.rightLeftRotation(node)
 		}
 	}
 
@@ -588,7 +590,7 @@ func (node *avlTreeNode) isAVL() bool {
 		if node.height == 1 {
 			return true
 		} else {
-			fmt.Println("leaf node height is ", node.height)
+			fmt.Println("leaf node height must is 1, now is:", node.height)
 			return false
 		}
 	} else if node.left != nil && node.right != nil {
@@ -649,11 +651,11 @@ func (node *avlTreeNode) isAVL() bool {
 				if cmp > 0 {
 					// 右节点必须比父亲大
 				} else {
-					fmt.Printf("%v,(%#v,%#v) child", node.k, node.right, node.left)
+					fmt.Printf("%v has only right tree,but right small", node.k)
 					return false
 				}
 			} else {
-				fmt.Printf("%v,(%#v,%#v) child", node.k, node.right, node.left)
+				fmt.Printf("%v has only right tree height:%d,but right has lc: %#v, rc：%#v", node.k, node.right.height, node.right.left, node.right.right)
 				return false
 			}
 		} else {
@@ -662,11 +664,11 @@ func (node *avlTreeNode) isAVL() bool {
 				if cmp < 0 {
 					// 左节点必须比父亲小
 				} else {
-					fmt.Printf("%v,(%#v,%#v) child", node.k, node.right, node.left)
+					fmt.Printf("%v has only left tree,but right small", node.k)
 					return false
 				}
 			} else {
-				fmt.Printf("%v,(%#v,%#v) child", node.k, node.right, node.left)
+				fmt.Printf("%v has only left tree height:%d,but left has lc: %#v, rc：%#v", node.k, node.left.height, node.left.left, node.left.right)
 				return false
 			}
 		}
