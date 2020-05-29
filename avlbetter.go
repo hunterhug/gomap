@@ -42,6 +42,10 @@ func (node *avlBetterTreeNode) height() int64 {
 	}
 }
 
+func (tree *avlBetterTree) Height() int64 {
+	return tree.root.height()
+}
+
 func (tree *avlBetterTree) rotateLeft(h *avlBetterTreeNode) *avlBetterTreeNode {
 	if h != nil {
 
@@ -141,7 +145,7 @@ func (tree *avlBetterTree) Put(key string, value interface{}) {
 	var cmp int64
 	node := tree.root
 	for node != nil {
-		cmp = tree.c(node.k, key)
+		cmp = tree.c(key, node.k)
 		parent = node
 		if cmp == 0 {
 			node.v = value
@@ -211,7 +215,7 @@ func (tree *avlBetterTree) Delete(key string) {
 	var cmp int64
 	node := tree.root
 	for node != nil {
-		cmp = tree.c(node.k, key)
+		cmp = tree.c(key, node.k)
 		if cmp == 0 {
 			break
 		} else if cmp < 0 {
@@ -221,46 +225,56 @@ func (tree *avlBetterTree) Delete(key string) {
 		}
 	}
 
+	if node == nil {
+		return
+	}
+
 	var maxNode, minNode *avlBetterTreeNode
 	if node.left != nil {
 		// find left tree max k
 		maxNode = node.left
-		for maxNode.right != nil {
-			maxNode = maxNode.right
+
+		for maxNode.left != nil || maxNode.right != nil {
+			for maxNode.right != nil {
+				maxNode = maxNode.right
+			}
+
+			node.k = maxNode.k
+			node.v = maxNode.v
+
+			if maxNode.left != nil {
+				// max k has left node
+				node = maxNode
+
+				// let left node replace
+				maxNode = maxNode.left
+			}
 		}
 
 		node.k = maxNode.k
 		node.v = maxNode.v
-
-		if maxNode.left != nil {
-			// max k has left node
-			node = maxNode
-
-			// let left node replace
-			maxNode = maxNode.left
-			node.k = maxNode.k
-			node.v = maxNode.v
-		}
-
 		node = maxNode // delete this node
 	}
 
 	if node.right != nil {
 		minNode = node.right
-		for minNode.left != nil {
-			minNode = minNode.left
+
+		for minNode.left != nil || minNode.right != nil {
+			for minNode.left != nil {
+				minNode = minNode.left
+			}
+
+			node.k = minNode.k
+			node.v = minNode.v
+
+			if minNode.right != nil {
+				node = minNode
+				minNode = minNode.right
+			}
 		}
 
 		node.k = minNode.k
 		node.v = minNode.v
-
-		if minNode.right != nil {
-			node = minNode
-			minNode = minNode.right
-			node.k = minNode.k
-			node.v = minNode.v
-		}
-
 		node = minNode
 	}
 
@@ -269,9 +283,9 @@ func (tree *avlBetterTree) Delete(key string) {
 
 	for parent != nil {
 		if parent.left == ps {
-			parent.balanceFactor--
+			parent.balanceFactor -= 1
 		} else {
-			parent.balanceFactor++
+			parent.balanceFactor += 1
 		}
 
 		if parent.balanceFactor < -1 {
@@ -360,12 +374,17 @@ func (node *avlBetterTreeNode) maxNode() *avlBetterTreeNode {
 func (tree *avlBetterTree) Get(key string) (value interface{}, exist bool) {
 	tree.Lock()
 	defer tree.Unlock()
+
+	if tree.root == nil {
+		return
+	}
+
 	var cmp int64
 	node := tree.root
 	for {
-		cmp = tree.c(node.k, key)
+		cmp = tree.c(key, node.k)
 		if cmp == 0 {
-			return node.k, true
+			return node.v, true
 		} else if cmp < 0 {
 			node = node.left
 		} else {
@@ -383,10 +402,15 @@ func (tree *avlBetterTree) Get(key string) (value interface{}, exist bool) {
 func (tree *avlBetterTree) Contains(key string) (exist bool) {
 	tree.Lock()
 	defer tree.Unlock()
+
+	if tree.root == nil {
+		return
+	}
+
 	var cmp int64
 	node := tree.root
 	for {
-		cmp = tree.c(node.k, key)
+		cmp = tree.c(key, node.k)
 		if cmp == 0 {
 			return true
 		} else if cmp < 0 {
@@ -531,7 +555,8 @@ func (node *avlBetterTreeNode) isAVL(compare comparator) bool {
 	}
 
 	if node.balanceFactor != node.left.height()-node.right.height() {
-		fmt.Printf("balanceFactor %d != %d-%d\n", node.height(), node.left.height(), node.right.height())
+		fmt.Printf("balanceFactor %d != %d-%d\n", node.balanceFactor, node.left.height(), node.right.height())
+		fmt.Printf("balanceFactor %#v != \n%#v-\n%#v\n", node, node.left, node.right)
 		return false
 	}
 	// 左右子树都为空，那么是叶子节点
@@ -601,7 +626,7 @@ func (node *avlBetterTreeNode) isAVL(compare comparator) bool {
 				if cmp > 0 {
 					// 右节点必须比父亲大
 				} else {
-					fmt.Printf("%v has only right tree,but right small", node.k)
+					fmt.Printf("%v has only right tree,but right small:%v", node.k, node.right.k)
 					return false
 				}
 			} else {
@@ -614,7 +639,7 @@ func (node *avlBetterTreeNode) isAVL(compare comparator) bool {
 				if cmp < 0 {
 					// 左节点必须比父亲小
 				} else {
-					fmt.Printf("%v has only left tree,but right small", node.k)
+					fmt.Printf("%v has only left tree,but left small:%v", node.k, node.left.k)
 					return false
 				}
 			} else {

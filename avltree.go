@@ -29,6 +29,24 @@ type avlTreeNode struct {
 	right  *avlTreeNode // 右字树
 }
 
+func (node *avlTreeNode) h() int64 {
+	if node == nil {
+		return 0
+	}
+
+	lh := node.left.h()
+	rh := node.right.h()
+	if lh > rh {
+		return lh + 1
+	} else {
+		return rh + 1
+	}
+}
+
+func (tree *avlTree) Height() int64 {
+	return tree.root.h()
+}
+
 // 更新节点的树高度
 func (node *avlTreeNode) updateHeight() {
 	if node == nil {

@@ -163,22 +163,29 @@ func main() {
 
 ## 性能测试
 
+我进行了压测：
+
 ```go
 go test -run="bench_test.go" -test.bench=".*" -test.benchmem=1 -count=1
 
-BenchmarkRBTMapPut-4         	 1000000	      7792 ns/op
-BenchmarkAVLMapPut-4         	  617694	      9425 ns/op
-BenchmarkGolangMapPut-4      	 1000000	      1921 ns/op
-BenchmarkRBTMapDelete-4      	  618603	      3019 ns/op
-BenchmarkAVLMapDelete-4      	  482985	      5753 ns/op
-BenchmarkGolangMapDelete-4   	 3617534	       448 ns/op
-BenchmarkRBTMapRandom-4      	  621559	      4528 ns/op
-BenchmarkAVLMapRandom-4      	  408882	      4856 ns/op
-BenchmarkGolangMapRandom-4   	  854816	      1253 ns/op
+BenchmarkGolangMapPut-4                  1000000              1385 ns/op             145 B/op          6 allocs/op
+BenchmarkRBTMapPut-4                      528231              3498 ns/op             113 B/op          6 allocs/op
+BenchmarkAVLMapPut-4                     1000000              3317 ns/op             104 B/op          6 allocs/op
+BenchmarkAVLRecursionMapPut-4             389806              4563 ns/op             116 B/op          6 allocs/op
+BenchmarkGolangMapDelete-4               2630281               582 ns/op              15 B/op          1 allocs/op
+BenchmarkRBTMapDelete-4                  2127256               624 ns/op              15 B/op          1 allocs/op
+BenchmarkAVLMapDelete-4                   638918              2256 ns/op              15 B/op          1 allocs/op
+BenchmarkAVLRecursionMapDelete-4          376202              2813 ns/op              15 B/op          1 allocs/op
+BenchmarkGolangMapGet-4                  9768266               172 ns/op               2 B/op          1 allocs/op
+BenchmarkRBTMapGet-4                     3276406               352 ns/op               2 B/op          1 allocs/op
+BenchmarkAVLMapGet-4                     3724939               315 ns/op               2 B/op          1 allocs/op
+BenchmarkAVLRecursionMapGet-4            2550055               462 ns/op               2 B/op          1 allocs/op
+BenchmarkGolangMapRandom-4               1000000              2292 ns/op             163 B/op          8 allocs/op
+BenchmarkRBTMapRandom-4                   244311              4635 ns/op             136 B/op          8 allocs/op
+BenchmarkAVLMapRandom-4                   488001              5879 ns/op             132 B/op          8 allocs/op
+BenchmarkAVLRecursionMapRandom-4          211246              5411 ns/op             138 B/op          8 allocs/op
 ```
 
-如果对程序内存使用比较苛刻，在存储大量键值对情况下，不想浪费内存，可以使用二叉查找树实现的 `Map`。
-
-因为拉链法实现的 `golang map` 速度肯定更快，如果资源充足，直接使用官方 `map` 即可。
+如果对程序内存使用比较苛刻，在存储大量键值对情况下，不想浪费内存，可以使用二叉查找树实现的 `Map`。因为拉链法实现的 `golang map` 速度肯定更快，如果资源充足，直接使用官方 `map` 即可。
 
 空间换时间，还是时间换空间，这是一个问题。

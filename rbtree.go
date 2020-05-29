@@ -43,6 +43,24 @@ type rbTNode struct {
 	color  bool        // color of parent point to this node
 }
 
+func (node *rbTNode) height() int64 {
+	if node == nil {
+		return 0
+	}
+
+	lh := node.left.height()
+	rh := node.right.height()
+	if lh > rh {
+		return lh + 1
+	} else {
+		return rh + 1
+	}
+}
+
+func (tree *rbTree) Height() int64 {
+	return tree.root.height()
+}
+
 // is rbt node is red
 func isRed(node *rbTNode) bool {
 	if node == nil {
@@ -284,7 +302,7 @@ func (tree *rbTree) Delete(key string) {
 	tree.Lock()
 	defer tree.Unlock()
 
-	if tree.len == 0 {
+	if tree.root == nil {
 		return
 	}
 
@@ -526,6 +544,10 @@ func (node *rbTNode) maxNode() *rbTNode {
 func (tree *rbTree) Get(key string) (value interface{}, exist bool) {
 	tree.Lock()
 	defer tree.Unlock()
+	if tree.root == nil {
+		return
+	}
+
 	node := tree.find(key)
 	if node != nil {
 		return node.v, true
@@ -538,6 +560,10 @@ func (tree *rbTree) Get(key string) (value interface{}, exist bool) {
 func (tree *rbTree) Contains(key string) (exist bool) {
 	tree.Lock()
 	defer tree.Unlock()
+	if tree.root == nil {
+		return false
+	}
+
 	if tree.find(key) == nil {
 		return false
 	} else {
@@ -636,10 +662,6 @@ func (tree *rbTree) GetBytes(key string) (value []byte, exist bool, err error) {
 
 // find key in tree
 func (tree *rbTree) find(key string) *rbTNode {
-	if tree.root == nil {
-		return nil
-	}
-
 	node := tree.root
 	for {
 		cmp := tree.c(node.k, key)

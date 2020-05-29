@@ -30,6 +30,7 @@ type Map interface {
 	MinKey() (key string, value interface{}, exist bool)          // find min key pairs
 	SetComparator(comparator)                                     // set compare func to control key compare
 	Check() bool                                                  // just help
+	Height() int64                                                // just help
 }
 
 // Iterator concurrent not safe

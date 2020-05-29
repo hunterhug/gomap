@@ -24,7 +24,7 @@ func TestNew(t *testing.T) {
 	m = NewAVLMap()
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
-		fmt.Println("add key:", key)
+		//fmt.Println("add key:", key)
 		// 2. put key pairs
 		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
 		m.Put(key, xx)
@@ -50,7 +50,7 @@ func TestNew(t *testing.T) {
 		}
 
 		if vv != v {
-			fmt.Println("err", vv, v)
+			fmt.Println("1 err", vv, v)
 			return
 		}
 	}
