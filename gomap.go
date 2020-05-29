@@ -7,6 +7,8 @@ package gomap // import "github.com/hunterhug/gomap"
 
 import "strings"
 
+type comparator func(key1, key2 string) int64
+
 // Map method
 // design to be concurrent safe
 // should support int key?
@@ -26,6 +28,7 @@ type Map interface {
 	Iterator() MapIterator                                        // map iterator, iterator from top to bottom which is layer order
 	MaxKey() (key string, value interface{}, exist bool)          // find max key pairs
 	MinKey() (key string, value interface{}, exist bool)          // find min key pairs
+	SetComparator(comparator)                                     // set compare func to control key compare
 	Check() bool                                                  // just help
 }
 
@@ -38,25 +41,40 @@ type MapIterator interface {
 
 // default map is rbt implement
 func NewMap() Map {
-	return new(rbTree)
+	t := new(rbTree)
+	t.c = comparatorDefault
+	return t
 }
 
 // default map is rbt implement
 func New() Map {
-	return new(rbTree)
+	t := new(rbTree)
+	t.c = comparatorDefault
+	return t
 }
 
 // default map is rbt implement
 func NewRBMap() Map {
-	return new(rbTree)
+	t := new(rbTree)
+	t.c = comparatorDefault
+	return t
+}
+
+// new a avl map
+func NewAVLRecursionMap() Map {
+	t := new(avlTree)
+	t.c = comparatorDefault
+	return t
 }
 
 // new a avl map
 func NewAVLMap() Map {
-	return new(avlTree)
+	t := new(avlBetterTree)
+	t.c = comparatorDefault
+	return t
 }
 
 // compare two key
-func compare(key1, key2 string) int64 {
+func comparatorDefault(key1, key2 string) int64 {
 	return int64(strings.Compare(key1, key2))
 }

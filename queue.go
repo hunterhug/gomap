@@ -83,7 +83,7 @@ func (queue *linkQueue) add(v bsTreeNode) {
 	}
 
 	// 队中元素数量+1
-	queue.size = queue.size + 1
+	queue.size++
 }
 
 // 出队
@@ -105,7 +105,7 @@ func (queue *linkQueue) remove() bsTreeNode {
 	queue.root = topNode.next
 
 	// 队中元素数量-1
-	queue.size = queue.size - 1
+	queue.size--
 
 	return v
 }

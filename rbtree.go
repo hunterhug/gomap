@@ -26,14 +26,10 @@ func ReflectError(v interface{}) error {
 // refer Java TreeMap
 // the first version is comment by chinese so keep it, future new comment will be Eng
 type rbTree struct {
-	root       *rbTNode // tree root node
-	len        int64    // tree key pairs num
-	sync.Mutex          // lock for concurrent safe
-}
-
-// new rbt tree map
-func NewRBTreeMap() Map {
-	return new(rbTree)
+	c          comparator // tree key compare
+	root       *rbTNode   // tree root node
+	len        int64      // tree key pairs num
+	sync.Mutex            // lock for concurrent safe
 }
 
 // rbt node
@@ -86,6 +82,15 @@ func rightOf(node *rbTNode) *rbTNode {
 func setColor(node *rbTNode, color bool) {
 	if node != nil {
 		node.color = color
+	}
+}
+
+// set Comparator
+func (tree *rbTree) SetComparator(c comparator) {
+	tree.Lock()
+	defer tree.Unlock()
+	if tree.len == 0 {
+		tree.c = c
 	}
 }
 
@@ -171,7 +176,7 @@ func (tree *rbTree) Put(key string, value interface{}) {
 	for {
 		parent = t
 
-		cmp = compare(key, t.k)
+		cmp = tree.c(key, t.k)
 		if cmp < 0 {
 			// 比当前节点小，往左子树插入
 			t = t.left
@@ -208,7 +213,7 @@ func (tree *rbTree) Put(key string, value interface{}) {
 	tree.fixAfterInsertion(newNode)
 
 	// len add 1
-	tree.len = tree.len + 1
+	tree.len++
 }
 
 // 调整新插入的节点，自底而上
@@ -282,7 +287,9 @@ func (tree *rbTree) Delete(key string) {
 	if tree.len == 0 {
 		return
 	}
+
 	// 查找元素是否存在，不存在则退出
+	// should inline like c++, describe func call
 	node := tree.find(key)
 	if node == nil {
 		return
@@ -292,7 +299,7 @@ func (tree *rbTree) Delete(key string) {
 	// 删除该节点
 	tree.delete(node)
 
-	tree.len = tree.len - 1
+	tree.len--
 }
 
 // 删除节点核心函数
@@ -383,7 +390,6 @@ func (tree *rbTree) delete(node *rbTNode) {
 	}
 
 	node.parent = nil
-
 }
 
 // 调整删除的叶子节点，自底向上
@@ -518,35 +524,25 @@ func (node *rbTNode) maxNode() *rbTNode {
 
 // 查找指定节点
 func (tree *rbTree) Get(key string) (value interface{}, exist bool) {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
-	if tree.root == nil {
-		// 如果是空树，返回空
-		return
+	node := tree.find(key)
+	if node != nil {
+		return node.v, true
 	}
 
-	node := tree.root.find(key)
-	if node == nil {
-		return nil, false
-	}
-	return node.v, true
+	return
 }
 
 // 查找指定节点
 func (tree *rbTree) Contains(key string) (exist bool) {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
-	if tree.root == nil {
-		// 如果是空树，返回空
-		return
-	}
-	node := tree.root.find(key)
-	if node == nil {
+	if tree.find(key) == nil {
 		return false
+	} else {
+		return true
 	}
-	return true
 }
 
 func (tree *rbTree) Len() int64 {
@@ -638,35 +634,26 @@ func (tree *rbTree) GetBytes(key string) (value []byte, exist bool, err error) {
 	return value, true, nil
 }
 
-// 查找指定节点
+// find key in tree
 func (tree *rbTree) find(key string) *rbTNode {
 	if tree.root == nil {
-		// 如果是空树，返回空
 		return nil
 	}
 
-	return tree.root.find(key)
-}
+	node := tree.root
+	for {
+		cmp := tree.c(node.k, key)
+		if cmp == 0 {
+			return node
+		} else if cmp < 0 {
+			node = node.left
+		} else {
+			node = node.right
+		}
 
-func (node *rbTNode) find(key string) *rbTNode {
-	cmp := compare(key, node.k)
-	if cmp == 0 {
-		// 如果该节点刚刚等于该值，那么返回该节点
-		return node
-	} else if cmp < 0 {
-		// 如果查找的值小于节点值，从节点的左子树开始找
-		if node.left == nil {
-			// 左子树为空，表示找不到该值了，返回nil
+		if node == nil {
 			return nil
 		}
-		return node.left.find(key)
-	} else {
-		// 如果查找的值大于节点值，从节点的右子树开始找
-		if node.right == nil {
-			// 右子树为空，表示找不到该值了，返回nil
-			return nil
-		}
-		return node.right.find(key)
 	}
 }
 
@@ -703,7 +690,7 @@ func (tree *rbTree) Check() bool {
 	}
 
 	// 判断树是否是一棵二分查找树
-	if !tree.root.isBST() {
+	if !tree.root.isBST(tree.c) {
 		fmt.Println("is not BST")
 		return false
 	}
@@ -733,14 +720,14 @@ func (tree *rbTree) Check() bool {
 }
 
 // 节点所在的子树是否是一棵二分查找树
-func (node *rbTNode) isBST() bool {
+func (node *rbTNode) isBST(c comparator) bool {
 	if node == nil {
 		return true
 	}
 
 	// 左子树非空，那么根节点必须大于左儿子节点
 	if node.left != nil {
-		cmp := compare(node.k, node.left.k)
+		cmp := c(node.k, node.left.k)
 		if cmp > 0 {
 		} else {
 			fmt.Printf("father:%#v,lchild:%#v,rchild:%#v\n", node, node.left, node.right)
@@ -750,7 +737,7 @@ func (node *rbTNode) isBST() bool {
 
 	// 右子树非空，那么根节点必须小于右儿子节点
 	if node.right != nil {
-		cmp := compare(node.k, node.right.k)
+		cmp := c(node.k, node.right.k)
 		if cmp < 0 {
 		} else {
 			fmt.Printf("father:%#v,lchild:%#v,rchild:%#v\n", node, node.left, node.right)
@@ -759,12 +746,12 @@ func (node *rbTNode) isBST() bool {
 	}
 
 	// 左子树也要判断是否是平衡查找树
-	if !node.left.isBST() {
+	if !node.left.isBST(c) {
 		return false
 	}
 
 	// 右子树也要判断是否是平衡查找树
-	if !node.right.isBST() {
+	if !node.right.isBST(c) {
 		return false
 	}
 

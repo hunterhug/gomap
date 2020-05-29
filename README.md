@@ -1,4 +1,4 @@
-# Map implement by Black-Red Tree, AVL Tree
+# Map implement by Red-Black Tree, AVL Tree
 
 [![GitHub forks](https://img.shields.io/github/forks/hunterhug/gomap.svg?style=social&label=Forks)](https://github.com/hunterhug/gomap/network)
 [![GitHub stars](https://img.shields.io/github/stars/hunterhug/gomap.svg?style=social&label=Stars)](https://github.com/hunterhug/gomap/stargazers)
@@ -8,13 +8,13 @@
 
 [中文说明](/README_CN.md)
 
-Map implement by tree data struct such Black-Red Tree, AVL Tree.
+Map implement by tree data struct such Red-Black Tree, AVL Tree.
 
 Our tree map is design to be concurrent safe, and don't waste any space different from golang standard map which not shrink even map key pairs num is 0.
 
 ## Usage
 
-simple get it by:
+Simple get it by:
 
 ```
 go get -v github.com/hunterhug/gomap
@@ -22,10 +22,10 @@ go get -v github.com/hunterhug/gomap
 
 There are:
 
-1. Standard Black-Red Tree Map(2-3-4-Tree): `gomap.New()`，`gomap.NewMap()`,`gomap.NewRBMap()`.
+1. Standard Red-Black Tree Map(2-3-4-Tree): `gomap.New()`，`gomap.NewMap()`,`gomap.NewRBMap()`.
 2. AVL Tree Map: `gomap.NewAVLMap()`.
 
-core api:
+Core api:
 
 ```go
 // Map method
@@ -44,6 +44,7 @@ type Map interface {
 	KeyList() []string                            // map key out to list from top to bottom which is layer order
 	KeySortedList() []string                      // map key out to list sorted
 	Iterator() MapIterator                        // map iterator, iterator from top to bottom which is layer order
+	SetComparator(comparator)                     // set compare func to control key compare
 }
 
 // Iterator concurrent not safe
@@ -54,9 +55,11 @@ type MapIterator interface {
 }
 ```
 
+We has already implement them by non recursion way and optimized a lot, so use which type of tree map is no different.
+
 ## Example
 
-some example below:
+Some example below:
 
 ```go
 package main
@@ -141,3 +144,21 @@ func main() {
 	}
 }
 ```
+
+## BenchTest
+
+We test `Golang map` and `Red-Black Tree`, `AVL Tree`:
+
+```
+BenchmarkRBTMapPut-4         	 1000000	      7792 ns/op
+BenchmarkAVLMapPut-4         	  617694	      9425 ns/op
+BenchmarkGolangMapPut-4      	 1000000	      1921 ns/op
+BenchmarkRBTMapDelete-4      	  618603	      3019 ns/op
+BenchmarkAVLMapDelete-4      	  482985	      5753 ns/op
+BenchmarkGolangMapDelete-4   	 3617534	       448 ns/op
+BenchmarkRBTMapRandom-4      	  621559	      4528 ns/op
+BenchmarkAVLMapRandom-4      	  408882	      4856 ns/op
+BenchmarkGolangMapRandom-4   	  854816	      1253 ns/op
+```
+
+If you want to save memory space, you can choose our tree map.

@@ -10,10 +10,12 @@ import (
 	"sync"
 )
 
+// Deprecate
 // AVL Tree
 // Use recursion.
 type avlTree struct {
-	root       *avlTreeNode // 树根节点
+	c          comparator   // tree key compare
+	root       *avlTreeNode // tree root node
 	len        int64        // tree key pairs num
 	sync.Mutex              // lock for concurrent safe
 }
@@ -26,21 +28,6 @@ type avlTreeNode struct {
 	left   *avlTreeNode // 左子树
 	right  *avlTreeNode // 右字树
 }
-
-// cal tree height
-//func height(node *avlTreeNode) int64 {
-//	if node == nil {
-//		return 0
-//	}
-//
-//	lh := height(node.left)
-//	rh := height(node.right)
-//	if lh > rh {
-//		return lh + 1
-//	} else {
-//		return rh + 1
-//	}
-//}
 
 // 更新节点的树高度
 func (node *avlTreeNode) updateHeight() {
@@ -132,6 +119,13 @@ func (_ *avlTreeNode) rightLeftRotation(node *avlTreeNode) *avlTreeNode {
 	return node.leftRotation(node)
 }
 
+// set Comparator
+func (tree *avlTree) SetComparator(c comparator) {
+	if tree.len == 0 {
+		tree.c = c
+	}
+}
+
 // 添加元素
 func (tree *avlTree) Put(key string, value interface{}) {
 	// add lock
@@ -140,7 +134,7 @@ func (tree *avlTree) Put(key string, value interface{}) {
 
 	add := false
 	if tree.root != nil {
-		node := tree.root.find(key)
+		node := tree.root.find(tree.c, key)
 		if node == nil {
 			add = true
 		}
@@ -149,14 +143,14 @@ func (tree *avlTree) Put(key string, value interface{}) {
 	}
 
 	// 往树根添加元素，会返回新的树根
-	tree.root = tree.root.put(key, value)
+	tree.root = tree.root.put(tree.c, key, value)
 
 	if add {
 		tree.len = tree.len + 1
 	}
 }
 
-func (node *avlTreeNode) put(key string, value interface{}) *avlTreeNode {
+func (node *avlTreeNode) put(compare comparator, key string, value interface{}) *avlTreeNode {
 	// 添加值到根节点node，如果node为空，那么让值成为新的根节点，树的高度为1
 	if node == nil {
 		return &avlTreeNode{k: key, v: value, height: 1}
@@ -174,7 +168,7 @@ func (node *avlTreeNode) put(key string, value interface{}) *avlTreeNode {
 	cmp := compare(key, node.k)
 	if cmp > 0 {
 		// 插入的值大于节点值，要从右子树继续插入
-		node.right = node.right.put(key, value)
+		node.right = node.right.put(compare, key, value)
 		// 平衡因子，插入右子树后，要确保树根左子树的高度不能比右子树低一层。
 		factor := node.balanceFactor()
 		// 右子树的高度变高了，导致左子树-右子树的高度从-1变成了-2。
@@ -190,7 +184,7 @@ func (node *avlTreeNode) put(key string, value interface{}) *avlTreeNode {
 		}
 	} else {
 		// 插入的值小于节点值，要从左子树继续插入
-		node.left = node.left.put(key, value)
+		node.left = node.left.put(compare, key, value)
 		// 平衡因子，插入左子树后，要确保树根左子树的高度不能比右子树高一层。
 		factor := node.balanceFactor()
 		// 左子树的高度变高了，导致左子树-右子树的高度从1变成了2。
@@ -274,14 +268,14 @@ func (tree *avlTree) Get(key string) (value interface{}, exist bool) {
 		return
 	}
 
-	node := tree.root.find(key)
+	node := tree.root.find(tree.c, key)
 	if node == nil {
 		return nil, false
 	}
 	return node.v, true
 }
 
-func (node *avlTreeNode) find(key string) *avlTreeNode {
+func (node *avlTreeNode) find(compare comparator, key string) *avlTreeNode {
 	cmp := compare(key, node.k)
 	if cmp == 0 {
 		// 如果该节点刚刚等于该值，那么返回该节点
@@ -292,14 +286,14 @@ func (node *avlTreeNode) find(key string) *avlTreeNode {
 			// 左子树为空，表示找不到该值了，返回nil
 			return nil
 		}
-		return node.left.find(key)
+		return node.left.find(compare, key)
 	} else {
 		// 如果查找的值大于节点值，从节点的右子树开始找
 		if node.right == nil {
 			// 右子树为空，表示找不到该值了，返回nil
 			return nil
 		}
-		return node.right.find(key)
+		return node.right.find(compare, key)
 	}
 }
 
@@ -313,17 +307,17 @@ func (tree *avlTree) Delete(key string) {
 	}
 
 	// 查找元素是否存在，不存在则退出
-	node := tree.root.find(key)
+	node := tree.root.find(tree.c, key)
 	if node == nil {
 		return
 	}
 
-	tree.root = tree.root.delete(key)
+	tree.root = tree.root.delete(tree.c, key)
 	tree.len = tree.len - 1
 
 }
 
-func (node *avlTreeNode) delete(key string) *avlTreeNode {
+func (node *avlTreeNode) delete(compare comparator, key string) *avlTreeNode {
 	if node == nil {
 		// 如果是空树，直接返回
 		return nil
@@ -332,12 +326,12 @@ func (node *avlTreeNode) delete(key string) *avlTreeNode {
 	cmp := compare(key, node.k)
 	if cmp < 0 {
 		// 从左子树开始删除
-		node.left = node.left.delete(key)
+		node.left = node.left.delete(compare, key)
 		// 删除后要更新该子树高度
 		node.left.updateHeight()
 	} else if cmp > 0 {
 		// 从右子树开始删除
-		node.right = node.right.delete(key)
+		node.right = node.right.delete(compare, key)
 		// 删除后要更新该子树高度
 		node.right.updateHeight()
 	} else {
@@ -363,7 +357,7 @@ func (node *avlTreeNode) delete(key string) *avlTreeNode {
 				node.v = maxNode.v
 
 				// 把最大的节点删掉
-				node.left = node.left.delete(maxNode.k)
+				node.left = node.left.delete(compare, maxNode.k)
 				// 删除后要更新该子树高度
 				node.left.updateHeight()
 			} else {
@@ -378,7 +372,7 @@ func (node *avlTreeNode) delete(key string) *avlTreeNode {
 				node.v = minNode.v
 
 				// 把最小的节点删掉
-				node.right = node.right.delete(minNode.k)
+				node.right = node.right.delete(compare, minNode.k)
 				// 删除后要更新该子树高度
 				node.right.updateHeight()
 			}
@@ -442,7 +436,7 @@ func (tree *avlTree) Contains(key string) (exist bool) {
 		// 如果是空树，返回空
 		return
 	}
-	node := tree.root.find(key)
+	node := tree.root.find(tree.c, key)
 	if node == nil {
 		return false
 	}
@@ -571,7 +565,7 @@ func (tree *avlTree) Check() bool {
 	}
 
 	// 判断节点是否符合 AVL 树的定义
-	if tree.root.isAVL() {
+	if tree.root.isAVL(tree.c) {
 		return true
 	}
 
@@ -579,7 +573,7 @@ func (tree *avlTree) Check() bool {
 }
 
 // 判断节点是否符合 AVL 树的定义
-func (node *avlTreeNode) isAVL() bool {
+func (node *avlTreeNode) isAVL(compare comparator) bool {
 	if node == nil {
 		return true
 	}
@@ -633,12 +627,12 @@ func (node *avlTreeNode) isAVL() bool {
 		}
 
 		// 递归判断子树
-		if !node.left.isAVL() {
+		if !node.left.isAVL(compare) {
 			return false
 		}
 
 		// 递归判断子树
-		if !node.right.isAVL() {
+		if !node.right.isAVL(compare) {
 			return false
 		}
 

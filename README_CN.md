@@ -28,8 +28,8 @@ go get -v github.com/hunterhug/gomap
 
 有以下几种用法:
 
-1. 使用标准红黑树(2-3-4-树): `gomap.New()`，`gomap.NewMap()`，`gomap.NewRBMap()`。
-2. 使用AVL树: `gomap.NewAVLMap()`。
+1. `Red-Black Tree`，使用标准红黑树(2-3-4-树): `gomap.New()`，`gomap.NewMap()`，`gomap.NewRBMap()`。
+2. `AVL Tree`，使用AVL树: `gomap.NewAVLMap()`。
 
 核心 API:
 
@@ -50,6 +50,7 @@ type Map interface {
 	KeyList() []string                            // 根据树的层次遍历，获取键列表
 	KeySortedList() []string                      // 根据树的中序遍历，获取字母序排序的键列表
 	Iterator() MapIterator                        // 迭代器，实现迭代
+	SetComparator(comparator)                     // 可自定义键比较器，默认按照字母序
 }
 
 // Iterator 迭代器，不是并发安全，迭代的时候确保不会修改Map，否则可能panic或产生副作用
@@ -60,6 +61,16 @@ type MapIterator interface {
 ```
 
 因为 `Golang` 不支持范型，目前 `key` 必须是字符串，`value` 可以是任何类型。
+
+## 算法比较
+
+`Red-Black Tree` 添加操作最多旋转两次，删除操作最多旋转三次，树最大高度为 `2log(N+1)`。
+
+`AVL Tree` 添加操作最多旋转两次，删除操作旋转可能旋转到根节点，树最大高度为 `1.44log(N+2)-1.328`。
+
+由于 `AVL Tree` 树理论上高度较低，所以查询速度稍快，但是删除操作因为旋转可能过多，会慢一点，但经过我们的优化，比如使用了非递归，只更新需要更新的树节点高度等，它们的速度是差不多的。
+
+`Java/C#/C++` 标准库内部实现都是用 `Red-Black Tree` 实现的，`Windows` 对进程地址空间的管理则使用了 `AVL Tree`。
 
 ## 例子
 
@@ -155,15 +166,18 @@ func main() {
 ```go
 go test -run="bench_test.go" -test.bench=".*" -test.benchmem=1 -count=1
 
-BenchmarkBRTMapPut-4             1000000              2076 ns/op              95 B/op          3 allocs/op
-BenchmarkGolangMapPut-4          1580353               696 ns/op             139 B/op          3 allocs/op
-BenchmarkBRTMapDelete-4          1000000              1134 ns/op              16 B/op          2 allocs/op
-BenchmarkGolangMapDelete-4       4215994               293 ns/op              16 B/op          2 allocs/op
-BenchmarkBRTMapRandom-4           675942              3547 ns/op             163 B/op          8 allocs/op
-BenchmarkGolangMapRandom-4        650377              1720 ns/op             225 B/op          8 allocs/op
+BenchmarkRBTMapPut-4         	 1000000	      7792 ns/op
+BenchmarkAVLMapPut-4         	  617694	      9425 ns/op
+BenchmarkGolangMapPut-4      	 1000000	      1921 ns/op
+BenchmarkRBTMapDelete-4      	  618603	      3019 ns/op
+BenchmarkAVLMapDelete-4      	  482985	      5753 ns/op
+BenchmarkGolangMapDelete-4   	 3617534	       448 ns/op
+BenchmarkRBTMapRandom-4      	  621559	      4528 ns/op
+BenchmarkAVLMapRandom-4      	  408882	      4856 ns/op
+BenchmarkGolangMapRandom-4   	  854816	      1253 ns/op
 ```
 
-如果对程序内存空间的占用要求比较高，在存储大量键值对情况下，不想浪费内存，可以使用二叉查找树实现的 `Map`。
+如果对程序内存使用比较苛刻，在存储大量键值对情况下，不想浪费内存，可以使用二叉查找树实现的 `Map`。
 
 因为拉链法实现的 `golang map` 速度肯定更快，如果资源充足，直接使用官方 `map` 即可。
 
