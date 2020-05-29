@@ -1,4 +1,4 @@
-# Map implement by Red-Black Tree, AVL Tree
+# Map Golang implement by Red-Black Tree, AVL Tree
 
 [![GitHub forks](https://img.shields.io/github/forks/hunterhug/gomap.svg?style=social&label=Forks)](https://github.com/hunterhug/gomap/network)
 [![GitHub stars](https://img.shields.io/github/stars/hunterhug/gomap.svg?style=social&label=Stars)](https://github.com/hunterhug/gomap/stargazers)

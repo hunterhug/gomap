@@ -1,4 +1,4 @@
-# 哈希表/字典 Map 实现，底层数据结构为平衡二叉查找树
+# 哈希表 Map Golang实现，底层数据结构为平衡二叉查找树
 
 [![GitHub forks](https://img.shields.io/github/forks/hunterhug/gomap.svg?style=social&label=Forks)](https://github.com/hunterhug/gomap/network)
 [![GitHub stars](https://img.shields.io/github/stars/hunterhug/gomap.svg?style=social&label=Stars)](https://github.com/hunterhug/gomap/stargazers)
