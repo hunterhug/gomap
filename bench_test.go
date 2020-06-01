@@ -39,6 +39,20 @@ func BenchmarkRBTMapPut(b *testing.B) {
 	}
 }
 
+func BenchmarkRBTHashMapPut(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewMap().SetHash()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+	}
+}
+
 func BenchmarkAVLMapPut(b *testing.B) {
 	b.StopTimer()
 
@@ -53,12 +67,40 @@ func BenchmarkAVLMapPut(b *testing.B) {
 	}
 }
 
+func BenchmarkAVLHashMapPut(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewAVLMap().SetHash()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+	}
+}
+
 func BenchmarkAVLRecursionMapPut(b *testing.B) {
 	b.StopTimer()
 
 	rand.Seed(int64(randNum))
 
 	m := NewAVLRecursionMap()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+	}
+}
+
+func BenchmarkAVLRecursionHashMapPut(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewAVLRecursionMap().SetHash()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
@@ -105,6 +147,25 @@ func BenchmarkRBTMapDelete(b *testing.B) {
 	}
 }
 
+func BenchmarkRBTHashMapDelete(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewMap().SetHash()
+	for i := 0; i < randNum; i++ {
+		key := fmt.Sprintf("%d", i)
+		xx := key + fmt.Sprintf("_%v", i)
+		m.Put(key, xx)
+	}
+
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		m.Delete(key)
+	}
+}
+
 func BenchmarkAVLMapDelete(b *testing.B) {
 	b.StopTimer()
 
@@ -124,12 +185,50 @@ func BenchmarkAVLMapDelete(b *testing.B) {
 	}
 }
 
+func BenchmarkAVLHashMapDelete(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewAVLMap().SetHash()
+	for i := 0; i < randNum; i++ {
+		key := fmt.Sprintf("%d", i)
+		xx := key + fmt.Sprintf("_%v", i)
+		m.Put(key, xx)
+	}
+
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		m.Delete(key)
+	}
+}
+
 func BenchmarkAVLRecursionMapDelete(b *testing.B) {
 	b.StopTimer()
 
 	rand.Seed(int64(randNum))
 
 	m := NewAVLRecursionMap()
+	for i := 0; i < randNum; i++ {
+		key := fmt.Sprintf("%d", i)
+		xx := key + fmt.Sprintf("_%v", i)
+		m.Put(key, xx)
+	}
+
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		m.Delete(key)
+	}
+}
+
+func BenchmarkAVLRecursionHashMapDelete(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewAVLRecursionMap().SetHash()
 	for i := 0; i < randNum; i++ {
 		key := fmt.Sprintf("%d", i)
 		xx := key + fmt.Sprintf("_%v", i)
@@ -182,6 +281,26 @@ func BenchmarkRBTMapGet(b *testing.B) {
 	}
 }
 
+func BenchmarkRBTHashMapGet(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewMap().SetHash()
+	for i := 0; i < randNum; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+	}
+
+	//b.Logf("rb tree height:%d", m.Height())
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", -2) // can not fetch forever
+		_, _ = m.Get(key)
+	}
+}
+
 func BenchmarkAVLMapGet(b *testing.B) {
 	b.StopTimer()
 
@@ -202,12 +321,52 @@ func BenchmarkAVLMapGet(b *testing.B) {
 	}
 }
 
+func BenchmarkAVLHashMapGet(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewAVLMap().SetHash()
+	for i := 0; i < randNum; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+	}
+
+	//b.Logf("avl tree height:%d", m.Height())
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", -2) // can not fetch forever
+		_, _ = m.Get(key)
+	}
+}
+
 func BenchmarkAVLRecursionMapGet(b *testing.B) {
 	b.StopTimer()
 
 	rand.Seed(int64(randNum))
 
 	m := NewAVLRecursionMap()
+	for i := 0; i < randNum; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+	}
+
+	//b.Logf("avl recur tree height:%d", m.Height())
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", -2) // can not fetch forever
+		_, _ = m.Get(key)
+	}
+}
+
+func BenchmarkAVLRecursionHashMapGet(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewAVLRecursionMap().SetHash()
 	for i := 0; i < randNum; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
 		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
@@ -257,6 +416,23 @@ func BenchmarkRBTMapRandom(b *testing.B) {
 	}
 }
 
+func BenchmarkRBTHashMapRandom(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewMap().SetHash()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+
+		key = fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		m.Delete(key)
+	}
+}
+
 func BenchmarkAVLMapRandom(b *testing.B) {
 	b.StopTimer()
 
@@ -274,12 +450,46 @@ func BenchmarkAVLMapRandom(b *testing.B) {
 	}
 }
 
+func BenchmarkAVLHashMapRandom(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewAVLMap().SetHash()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+
+		key = fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		m.Delete(key)
+	}
+}
+
 func BenchmarkAVLRecursionMapRandom(b *testing.B) {
 	b.StopTimer()
 
 	rand.Seed(int64(randNum))
 
 	m := NewAVLRecursionMap()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		xx := key + fmt.Sprintf("_%v", rand.Int63n(int64(randNum)))
+		m.Put(key, xx)
+
+		key = fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
+		m.Delete(key)
+	}
+}
+
+func BenchmarkAVLRecursionHashMapRandom(b *testing.B) {
+	b.StopTimer()
+
+	rand.Seed(int64(randNum))
+
+	m := NewAVLRecursionMap().SetHash()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))

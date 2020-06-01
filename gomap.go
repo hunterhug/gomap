@@ -5,7 +5,10 @@
 */
 package gomap // import "github.com/hunterhug/gomap"
 
-import "strings"
+import (
+	"github.com/OneOfOne/xxhash"
+	"strings"
+)
 
 type comparator func(key1, key2 string) int64
 
@@ -28,7 +31,8 @@ type Map interface {
 	Iterator() MapIterator                                        // map iterator, iterator from top to bottom which is layer order
 	MaxKey() (key string, value interface{}, exist bool)          // find max key pairs
 	MinKey() (key string, value interface{}, exist bool)          // find min key pairs
-	SetComparator(comparator)                                     // set compare func to control key compare
+	SetComparator(comparator) Map                                 // set compare func to control key compare
+	SetHash() Map                                                 // use hash func to random construct a tree, very slowly, don't use
 	Check() bool                                                  // just help
 	Height() int64                                                // just help
 }
@@ -75,7 +79,17 @@ func NewAVLMap() Map {
 	return t
 }
 
+var hashAlgorithm = func(key []byte) uint64 {
+	h := xxhash.New64()
+	h.Write(key)
+	return h.Sum64()
+}
+
 // compare two key
 func comparatorDefault(key1, key2 string) int64 {
 	return int64(strings.Compare(key1, key2))
+}
+
+func comparatorOfSetHash(key1, key2 string) int64 {
+	return int64(hashAlgorithm([]byte(key1)) - hashAlgorithm([]byte(key2)))
 }

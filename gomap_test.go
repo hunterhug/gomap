@@ -16,12 +16,13 @@ func TestNew(t *testing.T) {
 	rw := make(map[string]interface{})
 
 	// loop times
-	var num = 10000
+	var num = 1000
 	randNum := 100000000
 	rand.Seed(time.Now().Unix())
 	// 1. new a map
 	m := New()
 	m = NewAVLMap()
+	m.SetHash()
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(randNum)))
 		//fmt.Println("add key:", key)

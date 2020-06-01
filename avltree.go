@@ -138,10 +138,23 @@ func (_ *avlTreeNode) rightLeftRotation(node *avlTreeNode) *avlTreeNode {
 }
 
 // set Comparator
-func (tree *avlTree) SetComparator(c comparator) {
+func (tree *avlTree) SetComparator(c comparator) Map {
+	tree.Lock()
+	defer tree.Unlock()
 	if tree.len == 0 {
 		tree.c = c
 	}
+
+	return tree
+}
+
+func (tree *avlTree) SetHash() Map {
+	tree.Lock()
+	defer tree.Unlock()
+	if tree.len == 0 {
+		tree.c = comparatorOfSetHash
+	}
+	return tree
 }
 
 // 添加元素
