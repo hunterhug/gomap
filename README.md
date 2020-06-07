@@ -6,7 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/hunterhug/gomap)](https://goreportcard.com/report/github.com/hunterhug/gomap)
 [![GitHub issues](https://img.shields.io/github/issues/hunterhug/gomap.svg)](https://github.com/hunterhug/gomap/issues)
 
-[English README](/README.md)
+[English README](/README_EN.md)
 
 哈希表在某些场景下可以称为字典，用途是可以根据 `键key` 索引该键对应的 `值value`。哈希表是什么，可以参考：[数据结构和算法（Golang实现）](https://github.com/hunterhug/goa.c)。
 
