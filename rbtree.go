@@ -104,12 +104,14 @@ func setColor(node *rbTNode, color bool) {
 }
 
 // set Comparator
-func (tree *rbTree) SetComparator(c comparator) {
+func (tree *rbTree) SetComparator(c comparator) Map {
 	tree.Lock()
 	defer tree.Unlock()
 	if tree.len == 0 {
 		tree.c = c
 	}
+
+	return tree
 }
 
 // 对某节点左旋转

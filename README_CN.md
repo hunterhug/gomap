@@ -1,4 +1,4 @@
-# 哈希表 Map Golang实现，底层数据结构为平衡二叉查找树
+# Tree Map，使用红黑树，AVL树实现
 
 [![GitHub forks](https://img.shields.io/github/forks/hunterhug/gomap.svg?style=social&label=Forks)](https://github.com/hunterhug/gomap/network)
 [![GitHub stars](https://img.shields.io/github/stars/hunterhug/gomap.svg?style=social&label=Stars)](https://github.com/hunterhug/gomap/stargazers)
@@ -10,11 +10,9 @@
 
 哈希表在某些场景下可以称为字典，用途是可以根据 `键key` 索引该键对应的 `值value`。哈希表是什么，可以参考：[数据结构和算法（Golang实现）](https://github.com/hunterhug/goa.c)。
 
-目前实现的哈希表 `Map`，不是用链表数组数据结构实现的，而是以平衡二叉查找树形式来实现。
+我们知道 `Golang map`，内置类型的 `map` 使用拉链法实现，会提前分配空间，随着元素的增加，会不断扩容，这样会一直占用空间，即使删除元素也不会缩容，导致无法垃圾回收，可能出现内存溢出的情况。
 
-我们知道 `Golang` 有标准内置类型 `map`，内置类型的 `map` 使用拉链法实现，会提前分配空间，随着元素的增加，会不断扩容，这样会一直占用空间，即使删除元素也不会缩容，导致无法垃圾回收，可能出现内存溢出的情况。
-
-使用平衡二叉查找树结构实现的哈希表，不会占用多余空间，因为平衡树的缘故，查找元素效率也不是那么地糟糕，所以有时候选择它来做哈希表是特别好的。
+我们使用平衡二叉查找树：红黑树或者AVL树来实现 `map`，不会占用多余空间，因为 `Golang` 不支持范型，目前 `key` 必须是字符串，`value` 可以是任何类型，且为了效率，我们不进行哈希处理，也就是 `键key` 的 `hash` 就是其本身。
 
 ## 如何使用
 
@@ -34,23 +32,23 @@ go get -v github.com/hunterhug/gomap
 核心 API:
 
 ```go
-// Map 实现
+// Tree Map 实现
 // 被设计为并发安全的
 type Map interface {
 	Put(key string, value interface{})            // 放入键值对
 	Delete(key string)                            // 删除键
-	Get(key string) (interface{}, bool)           // 获取键，返回的值value是interface{}类型的，想返回具体类型的值参考下面的方法
-	GetInt(key string) (int, bool, error)         // get value auto change to Int
-	GetInt64(key string) (int64, bool, error)     // get value auto change to Int64
-	GetString(key string) (string, bool, error)   // get value auto change to string
-	GetFloat64(key string) (float64, bool, error) // get value auto change to string
-	GetBytes(key string) ([]byte, bool, error)    // get value auto change to []byte
-	Contain(key string) bool                      // 查看键是否存在
+	Get(key string) (interface{}, bool)           // 获取键，返回的值 value 是 interface{} 类型的，想返回具体类型的值参考下面的方法
+	GetInt(key string) (int, bool, error)         // 获取键，返回的值 value 转成 int
+	GetInt64(key string) (int64, bool, error)     // 获取键，返回的值 value 转成 int64
+	GetString(key string) (string, bool, error)   // 获取键，返回的值 value 转成 string
+	GetFloat64(key string) (float64, bool, error) // 获取键，返回的值 value 转成 float64
+	GetBytes(key string) ([]byte, bool, error)    // 获取键，返回的值 value 转成 []byte
+	Contains(key string) bool                     // 查看键是否存在
 	Len() int64                                   // 查看键值对数量
 	KeyList() []string                            // 根据树的层次遍历，获取键列表
 	KeySortedList() []string                      // 根据树的中序遍历，获取字母序排序的键列表
 	Iterator() MapIterator                        // 迭代器，实现迭代
-	SetComparator(comparator)                     // 可自定义键比较器，默认按照字母序
+	SetComparator(comparator) Map                 // 可自定义键比较器，默认按照字母序
 }
 
 // Iterator 迭代器，不是并发安全，迭代的时候确保不会修改Map，否则可能panic或产生副作用
@@ -59,8 +57,6 @@ type MapIterator interface {
 	Next() (key string, value interface{}) // 获取下一对键值对，迭代器向前一步
 }
 ```
-
-因为 `Golang` 不支持范型，目前 `key` 必须是字符串，`value` 可以是任何类型。
 
 ## 算法比较
 
@@ -185,6 +181,8 @@ BenchmarkRBTMapRandom-4                   244311              4635 ns/op        
 BenchmarkAVLMapRandom-4                   488001              5879 ns/op             132 B/op          8 allocs/op
 BenchmarkAVLRecursionMapRandom-4          211246              5411 ns/op             138 B/op          8 allocs/op
 ```
+
+其中 `GolangMap` 是内置 `map`，使用空间换时间，其速度是最快的。`RBTMap` 是非递归版本的标准红黑树，`AVLMap` 是非递归版本的 `AVL` 树，`AVLRecursionMap` 是递归版本的 `AVL` 树（效果差不要使用）。
 
 如果对程序内存使用比较苛刻，在存储大量键值对情况下，不想浪费内存，可以使用二叉查找树实现的 `Map`。因为拉链法实现的 `golang map` 速度肯定更快，如果资源充足，直接使用官方 `map` 即可。
 

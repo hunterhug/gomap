@@ -701,8 +701,12 @@ func (tree *avlBetterTree) Iterator() MapIterator {
 	return q
 }
 
-func (tree *avlBetterTree) SetComparator(c comparator) {
+func (tree *avlBetterTree) SetComparator(c comparator) Map {
+	tree.Lock()
+	defer tree.Unlock()
 	if tree.len == 0 {
 		tree.c = c
 	}
+
+	return tree
 }

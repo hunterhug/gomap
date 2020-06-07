@@ -28,7 +28,7 @@ type Map interface {
 	Iterator() MapIterator                                        // map iterator, iterator from top to bottom which is layer order
 	MaxKey() (key string, value interface{}, exist bool)          // find max key pairs
 	MinKey() (key string, value interface{}, exist bool)          // find min key pairs
-	SetComparator(comparator)                                     // set compare func to control key compare
+	SetComparator(comparator) Map                                 // set compare func to control key compare
 	Check() bool                                                  // just help
 	Height() int64                                                // just help
 }
