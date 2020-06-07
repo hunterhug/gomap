@@ -6,7 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/hunterhug/gomap)](https://goreportcard.com/report/github.com/hunterhug/gomap)
 [![GitHub issues](https://img.shields.io/github/issues/hunterhug/gomap.svg)](https://github.com/hunterhug/gomap/issues)
 
-[中文说明](/README_CN.md)
+[中文说明](/README.md)
 
 Map implement by tree data struct such Red-Black Tree, AVL Tree.
 
