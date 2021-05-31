@@ -11,6 +11,8 @@ var (
 )
 
 // go test -run="bench_test.go" -test.bench=".*" -test.benchmem=1 -count=3
+// -test.benchmem : 是否在性能测试的时候输出内存情况
+// 循环次数， 平均每次执行时间
 func BenchmarkGolangMapPut(b *testing.B) {
 	b.StopTimer()
 

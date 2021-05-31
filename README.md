@@ -101,12 +101,13 @@ func comparatorInt(key1, key2 string) int64 {
 func main() {
 	checkMap := make(map[string]struct{})
 
-	// 1. new a map
+	// 1. new a map default is rb tree
 	// 1. 新建一个 Map，默认为标准红黑树实现
 	m := gomap.New()
-	m.SetComparator(comparatorInt) // set inner comparator
+	//m = gomap.NewAVLMap()    // avl tree better version
+	//m = gomap.NewAVLRecursionMap() // avl tree bad version
 
-	//m = gomap.NewAVLMap()
+	m.SetComparator(comparatorInt) // set inner comparator
 
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
@@ -195,24 +196,28 @@ func main() {
 We test `Golang map` and `Red-Black Tree`, `AVL Tree`:
 
 ```go
-go test -run="bench_test.go" -test.bench=".*" -test.benchmem=1 -count=1
-
-BenchmarkGolangMapPut-4                  1000000              1385 ns/op             145 B/op          6 allocs/op
-BenchmarkRBTMapPut-4                      528231              3498 ns/op             113 B/op          6 allocs/op
-BenchmarkAVLMapPut-4                     1000000              3317 ns/op             104 B/op          6 allocs/op
-BenchmarkAVLRecursionMapPut-4             389806              4563 ns/op             116 B/op          6 allocs/op
-BenchmarkGolangMapDelete-4               2630281               582 ns/op              15 B/op          1 allocs/op
-BenchmarkRBTMapDelete-4                  2127256               624 ns/op              15 B/op          1 allocs/op
-BenchmarkAVLMapDelete-4                   638918              2256 ns/op              15 B/op          1 allocs/op
-BenchmarkAVLRecursionMapDelete-4          376202              2813 ns/op              15 B/op          1 allocs/op
-BenchmarkGolangMapGet-4                  9768266               172 ns/op               2 B/op          1 allocs/op
-BenchmarkRBTMapGet-4                     3276406               352 ns/op               2 B/op          1 allocs/op
-BenchmarkAVLMapGet-4                     3724939               315 ns/op               2 B/op          1 allocs/op
-BenchmarkAVLRecursionMapGet-4            2550055               462 ns/op               2 B/op          1 allocs/op
-BenchmarkGolangMapRandom-4               1000000              2292 ns/op             163 B/op          8 allocs/op
-BenchmarkRBTMapRandom-4                   244311              4635 ns/op             136 B/op          8 allocs/op
-BenchmarkAVLMapRandom-4                   488001              5879 ns/op             132 B/op          8 allocs/op
-BenchmarkAVLRecursionMapRandom-4          211246              5411 ns/op             138 B/op          8 allocs/op
+go test -run="bench_test.go" -test.bench=".*" -test.benchmem=1 -count=1                                                                                                            master 
+goos: darwin
+goarch: amd64
+pkg: github.com/hunterhug/gomap
+BenchmarkGolangMapPut-12                 1791264               621 ns/op             112 B/op          6 allocs/op
+BenchmarkRBTMapPut-12                    1000000              1408 ns/op             104 B/op          6 allocs/op
+BenchmarkAVLMapPut-12                    1000000              1440 ns/op             104 B/op          6 allocs/op
+BenchmarkAVLRecursionMapPut-12           1000000              2024 ns/op             104 B/op          6 allocs/op
+BenchmarkGolangMapDelete-12              3577232               303 ns/op              15 B/op          1 allocs/op
+BenchmarkRBTMapDelete-12                  996924              1248 ns/op              15 B/op          1 allocs/op
+BenchmarkAVLMapDelete-12                 1000000              1227 ns/op              15 B/op          1 allocs/op
+BenchmarkAVLRecursionMapDelete-12         667242              1866 ns/op              15 B/op          1 allocs/op
+BenchmarkGolangMapGet-12                15797131                72.2 ns/op             2 B/op          1 allocs/op
+BenchmarkRBTMapGet-12                    5798295               195 ns/op               2 B/op          1 allocs/op
+BenchmarkAVLMapGet-12                    5831353               197 ns/op               2 B/op          1 allocs/op
+BenchmarkAVLRecursionMapGet-12           5275490               228 ns/op               2 B/op          1 allocs/op
+BenchmarkGolangMapRandom-12              1256779               940 ns/op             146 B/op          8 allocs/op
+BenchmarkRBTMapRandom-12                  965804              2652 ns/op             126 B/op          8 allocs/op
+BenchmarkAVLMapRandom-12                  902004              2805 ns/op             126 B/op          8 allocs/op
+BenchmarkAVLRecursionMapRandom-12         701880              3309 ns/op             129 B/op          8 allocs/op
+PASS
+ok      github.com/hunterhug/gomap      66.006s
 ```
 
 If you want to save memory space, you can choose our tree map.

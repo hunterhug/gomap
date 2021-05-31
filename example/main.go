@@ -36,12 +36,13 @@ func comparatorInt(key1, key2 string) int64 {
 func main() {
 	checkMap := make(map[string]struct{})
 
-	// 1. new a map
+	// 1. new a map default is rb tree
 	// 1. 新建一个 Map，默认为标准红黑树实现
 	m := gomap.New()
-	m.SetComparator(comparatorInt) // set inner comparator
+	//m = gomap.NewAVLMap()    // avl tree better version
+	//m = gomap.NewAVLRecursionMap() // avl tree bad version
 
-	//m = gomap.NewAVLMap()
+	m.SetComparator(comparatorInt) // set inner comparator
 
 	for i := 0; i < num; i++ {
 		key := fmt.Sprintf("%d", rand.Int63n(int64(num)))
