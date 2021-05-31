@@ -666,7 +666,7 @@ func (tree *rbTree) GetBytes(key string) (value []byte, exist bool, err error) {
 func (tree *rbTree) find(key string) *rbTNode {
 	node := tree.root
 	for {
-		cmp := tree.c(node.k, key)
+		cmp := tree.c(key, node.k)
 		if cmp == 0 {
 			return node
 		} else if cmp < 0 {
