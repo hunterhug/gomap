@@ -11,20 +11,18 @@ import (
 	"sync"
 )
 
-// color
 const (
 	RED   = true
 	BLACK = false
 )
 
-// type reflect err
+// ReflectError type reflect err
 func ReflectError(v interface{}) error {
 	return errors.New(fmt.Sprintf("type is %T, value is:%#v", v, v))
 }
 
 // red-black tree, short call rbt
 // refer Java TreeMap
-// the first version is comment by chinese so keep it, future new comment will be Eng
 type rbTree struct {
 	c          comparator // tree key compare
 	root       *rbTNode   // tree root node
@@ -103,7 +101,6 @@ func setColor(node *rbTNode, color bool) {
 	}
 }
 
-// set Comparator
 func (tree *rbTree) SetComparator(c comparator) Map {
 	tree.Lock()
 	defer tree.Unlock()
@@ -164,8 +161,7 @@ func (tree *rbTree) rotateRight(h *rbTNode) {
 	}
 }
 
-// 普通红黑树添加元素
-// put key pairs
+// Put 普通红黑树添加元素
 func (tree *rbTree) Put(key string, value interface{}) {
 	// add lock
 	tree.Lock()
@@ -299,7 +295,7 @@ func (tree *rbTree) fixAfterInsertion(node *rbTNode) {
 	tree.root.color = BLACK
 }
 
-// 普通红黑树删除元素
+// Delete 普通红黑树删除元素
 func (tree *rbTree) Delete(key string) {
 	tree.Lock()
 	defer tree.Unlock()
@@ -494,7 +490,7 @@ func (tree *rbTree) fixAfterDeletion(node *rbTNode) {
 	setColor(node, BLACK)
 }
 
-// find min key pairs
+// MinKey find min key pairs
 func (tree *rbTree) MinKey() (key string, value interface{}, exist bool) {
 	// add lock
 	tree.Lock()
@@ -518,7 +514,7 @@ func (node *rbTNode) minNode() *rbTNode {
 	return node.left.minNode()
 }
 
-// find max key pairs
+// MaxKey find max key pairs
 func (tree *rbTree) MaxKey() (key string, value interface{}, exist bool) {
 	// add lock
 	tree.Lock()
@@ -542,7 +538,7 @@ func (node *rbTNode) maxNode() *rbTNode {
 	return node.right.maxNode()
 }
 
-// 查找指定节点
+// Get 查找指定节点
 func (tree *rbTree) Get(key string) (value interface{}, exist bool) {
 	tree.Lock()
 	defer tree.Unlock()
@@ -558,7 +554,7 @@ func (tree *rbTree) Get(key string) (value interface{}, exist bool) {
 	return
 }
 
-// 查找指定节点
+// Contains 查找指定节点
 func (tree *rbTree) Contains(key string) (exist bool) {
 	tree.Lock()
 	defer tree.Unlock()
@@ -577,7 +573,6 @@ func (tree *rbTree) Len() int64 {
 	return tree.len
 }
 
-// get int
 func (tree *rbTree) GetInt(key string) (value int, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -594,7 +589,6 @@ func (tree *rbTree) GetInt(key string) (value int, exist bool, err error) {
 	return value, true, nil
 }
 
-// get int64
 func (tree *rbTree) GetInt64(key string) (value int64, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -611,7 +605,6 @@ func (tree *rbTree) GetInt64(key string) (value int64, exist bool, err error) {
 	return value, true, nil
 }
 
-// get string
 func (tree *rbTree) GetString(key string) (value string, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -628,7 +621,6 @@ func (tree *rbTree) GetString(key string) (value string, exist bool, err error) 
 	return value, true, nil
 }
 
-// get float64
 func (tree *rbTree) GetFloat64(key string) (value float64, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -645,7 +637,6 @@ func (tree *rbTree) GetFloat64(key string) (value float64, exist bool, err error
 	return value, true, nil
 }
 
-// get byte
 func (tree *rbTree) GetBytes(key string) (value []byte, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -681,7 +672,7 @@ func (tree *rbTree) find(key string) *rbTNode {
 	}
 }
 
-// 中序遍历
+// KeySortedList 中序遍历
 // mid order get key list
 func (tree *rbTree) KeySortedList() []string {
 	// add lock
@@ -707,7 +698,7 @@ func (node *rbTNode) midOrder(keyList []string) []string {
 	return keyList
 }
 
-// 验证是不是棵红黑树
+// Check 验证是不是棵红黑树
 func (tree *rbTree) Check() bool {
 	if tree == nil || tree.root == nil {
 		return true
@@ -866,7 +857,6 @@ func (node *rbTNode) values() (key string, value interface{}) {
 }
 
 func (tree *rbTree) KeyList() []string {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
 

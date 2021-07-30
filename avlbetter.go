@@ -27,7 +27,7 @@ type avlBetterTreeNode struct {
 	parent        *avlBetterTreeNode
 }
 
-// cal  height
+// cal height
 func (node *avlBetterTreeNode) height() int64 {
 	if node == nil {
 		return 0
@@ -48,8 +48,6 @@ func (tree *avlBetterTree) Height() int64 {
 
 func (tree *avlBetterTree) rotateLeft(h *avlBetterTreeNode) *avlBetterTreeNode {
 	if h != nil {
-
-		// 看图理解
 		x := h.right
 		h.right = x.left
 
@@ -125,9 +123,7 @@ func (tree *avlBetterTree) rotateRight(h *avlBetterTreeNode) *avlBetterTreeNode 
 	return nil
 }
 
-// put key pairs
 func (tree *avlBetterTree) Put(key string, value interface{}) {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
 
@@ -327,9 +323,8 @@ func (tree *avlBetterTree) Delete(key string) {
 	tree.len--
 }
 
-// find min key pairs
+// MinKey find min key pairs
 func (tree *avlBetterTree) MinKey() (key string, value interface{}, exist bool) {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
 	if tree.root == nil {
@@ -349,9 +344,8 @@ func (node *avlBetterTreeNode) minNode() *avlBetterTreeNode {
 	return node.left.minNode()
 }
 
-// find max key pairs
+// MaxKey find max key pairs
 func (tree *avlBetterTree) MaxKey() (key string, value interface{}, exist bool) {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
 	if tree.root == nil {
@@ -431,7 +425,6 @@ func (tree *avlBetterTree) Len() int64 {
 	return tree.len
 }
 
-// get int
 func (tree *avlBetterTree) GetInt(key string) (value int, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -448,7 +441,6 @@ func (tree *avlBetterTree) GetInt(key string) (value int, exist bool, err error)
 	return value, true, nil
 }
 
-// get int64
 func (tree *avlBetterTree) GetInt64(key string) (value int64, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -465,7 +457,6 @@ func (tree *avlBetterTree) GetInt64(key string) (value int64, exist bool, err er
 	return value, true, nil
 }
 
-// get string
 func (tree *avlBetterTree) GetString(key string) (value string, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -482,7 +473,6 @@ func (tree *avlBetterTree) GetString(key string) (value string, exist bool, err 
 	return value, true, nil
 }
 
-// get float64
 func (tree *avlBetterTree) GetFloat64(key string) (value float64, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -499,7 +489,6 @@ func (tree *avlBetterTree) GetFloat64(key string) (value float64, exist bool, er
 	return value, true, nil
 }
 
-// get byte
 func (tree *avlBetterTree) GetBytes(key string) (value []byte, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -517,7 +506,6 @@ func (tree *avlBetterTree) GetBytes(key string) (value []byte, exist bool, err e
 }
 
 func (tree *avlBetterTree) KeySortedList() []string {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
 	keyList := make([]string, 0, tree.len)
@@ -674,7 +662,6 @@ func (node *avlBetterTreeNode) values() (key string, value interface{}) {
 }
 
 func (tree *avlBetterTree) KeyList() []string {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
 

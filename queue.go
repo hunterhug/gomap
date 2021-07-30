@@ -9,7 +9,6 @@ import (
 	"sync"
 )
 
-// 链表队列，先进先出
 // use queue implement iterator
 type linkQueue struct {
 	root *linkNode  // 链表起点
@@ -23,7 +22,7 @@ type linkNode struct {
 	value bsTreeNode
 }
 
-// has next, queue size > 0
+// HasNext has next, queue size > 0
 func (queue *linkQueue) HasNext() bool {
 	if queue.size > 0 {
 		return true

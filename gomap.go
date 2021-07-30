@@ -33,42 +33,42 @@ type Map interface {
 	Height() int64                                                // just help
 }
 
-// Iterator concurrent not safe
+// MapIterator Iterator concurrent not safe
 // you should deal by yourself
 type MapIterator interface {
 	HasNext() bool
 	Next() (key string, value interface{})
 }
 
-// default map is rbt implement
+// NewMap default map is rbt implement
 func NewMap() Map {
 	t := new(rbTree)
 	t.c = comparatorDefault
 	return t
 }
 
-// default map is rbt implement
+// New default map is rbt implement
 func New() Map {
 	t := new(rbTree)
 	t.c = comparatorDefault
 	return t
 }
 
-// default map is rbt implement
+// NewRBMap default map is rbt implement
 func NewRBMap() Map {
 	t := new(rbTree)
 	t.c = comparatorDefault
 	return t
 }
 
-// new a avl map
+// NewAVLRecursionMap new a avl map
 func NewAVLRecursionMap() Map {
 	t := new(avlTree)
 	t.c = comparatorDefault
 	return t
 }
 
-// new a avl map
+// NewAVLMap new a avl map
 func NewAVLMap() Map {
 	t := new(avlBetterTree)
 	t.c = comparatorDefault

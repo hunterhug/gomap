@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-// Deprecate
+// Deprecated
 // AVL Tree
 // Use recursion.
 type avlTree struct {
@@ -20,6 +20,7 @@ type avlTree struct {
 	sync.Mutex              // lock for concurrent safe
 }
 
+// Deprecated
 // AVL节点
 type avlTreeNode struct {
 	k      string       // key
@@ -137,7 +138,8 @@ func (_ *avlTreeNode) rightLeftRotation(node *avlTreeNode) *avlTreeNode {
 	return node.leftRotation(node)
 }
 
-// set Comparator
+// SetComparator set Comparator
+// Deprecated
 func (tree *avlTree) SetComparator(c comparator) Map {
 	tree.Lock()
 	defer tree.Unlock()
@@ -147,7 +149,8 @@ func (tree *avlTree) SetComparator(c comparator) Map {
 	return tree
 }
 
-// 添加元素
+// Put 添加元素
+// Deprecated
 func (tree *avlTree) Put(key string, value interface{}) {
 	// add lock
 	tree.Lock()
@@ -232,7 +235,8 @@ func (node *avlTreeNode) put(compare comparator, key string, value interface{}) 
 	}
 }
 
-// find min key pairs
+// MinKey find min key pairs
+// Deprecated
 func (tree *avlTree) MinKey() (key string, value interface{}, exist bool) {
 	// add lock
 	tree.Lock()
@@ -256,7 +260,8 @@ func (node *avlTreeNode) minNode() *avlTreeNode {
 	return node.left.minNode()
 }
 
-// 找出最大值的节点
+// MaxKey 找出最大值的节点
+// Deprecated
 func (tree *avlTree) MaxKey() (key string, value interface{}, exist bool) {
 	// add lock
 	tree.Lock()
@@ -279,7 +284,8 @@ func (node *avlTreeNode) maxNode() *avlTreeNode {
 	return node.right.maxNode()
 }
 
-// 查找指定节点
+// Get 查找指定节点
+// Deprecated
 func (tree *avlTree) Get(key string) (value interface{}, exist bool) {
 	// add lock
 	tree.Lock()
@@ -318,7 +324,8 @@ func (node *avlTreeNode) find(compare comparator, key string) *avlTreeNode {
 	}
 }
 
-// 删除指定的元素
+// Delete 删除指定的元素
+// Deprecated
 func (tree *avlTree) Delete(key string) {
 	// add lock
 	tree.Lock()
@@ -448,7 +455,8 @@ func (node *avlTreeNode) delete(compare comparator, key string) *avlTreeNode {
 	}
 }
 
-// 查找指定节点
+// Contains 查找指定节点
+// Deprecated
 func (tree *avlTree) Contains(key string) (exist bool) {
 	// add lock
 	tree.Lock()
@@ -468,7 +476,6 @@ func (tree *avlTree) Len() int64 {
 	return tree.len
 }
 
-// get int
 func (tree *avlTree) GetInt(key string) (value int, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -485,7 +492,6 @@ func (tree *avlTree) GetInt(key string) (value int, exist bool, err error) {
 	return value, true, nil
 }
 
-// get int64
 func (tree *avlTree) GetInt64(key string) (value int64, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -502,7 +508,6 @@ func (tree *avlTree) GetInt64(key string) (value int64, exist bool, err error) {
 	return value, true, nil
 }
 
-// get string
 func (tree *avlTree) GetString(key string) (value string, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -519,7 +524,6 @@ func (tree *avlTree) GetString(key string) (value string, exist bool, err error)
 	return value, true, nil
 }
 
-// get float64
 func (tree *avlTree) GetFloat64(key string) (value float64, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -536,7 +540,6 @@ func (tree *avlTree) GetFloat64(key string) (value float64, exist bool, err erro
 	return value, true, nil
 }
 
-// get byte
 func (tree *avlTree) GetBytes(key string) (value []byte, exist bool, err error) {
 	var v interface{}
 	v, exist = tree.Get(key)
@@ -553,8 +556,9 @@ func (tree *avlTree) GetBytes(key string) (value []byte, exist bool, err error) 
 	return value, true, nil
 }
 
-// 中序遍历
+// KeySortedList 中序遍历
 // mid order get key list
+// Deprecated
 func (tree *avlTree) KeySortedList() []string {
 	// add lock
 	tree.Lock()
@@ -579,7 +583,8 @@ func (node *avlTreeNode) midOrder(keyList []string) []string {
 	return keyList
 }
 
-// 验证是不是棵AVL树
+// Check 验证是不是棵AVL树
+// Deprecated
 func (tree *avlTree) Check() bool {
 	if tree == nil || tree.root == nil {
 		return true
@@ -716,7 +721,6 @@ func (node *avlTreeNode) values() (key string, value interface{}) {
 }
 
 func (tree *avlTree) KeyList() []string {
-	// add lock
 	tree.Lock()
 	defer tree.Unlock()
 
