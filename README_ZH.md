@@ -28,6 +28,8 @@ go get -v github.com/hunterhug/gomap
 1. `Red-Black Tree`，使用标准红黑树(2-3-4-树): `gomap.New()`，`gomap.NewMap()`，`gomap.NewRBMap()`。
 2. `AVL Tree`，使用AVL树: `gomap.NewAVLMap()`。
 
+以上实现都是非递归版本，性能有保证。
+
 核心 API:
 
 ```go
@@ -229,7 +231,7 @@ PASS
 ok      github.com/hunterhug/gomap      66.006s
 ```
 
-其中 `GolangMap` 是内置 `map`，使用空间换时间，其速度是最快的。`RBTMap` 是非递归版本的标准红黑树，`AVLMap` 是非递归版本的 `AVL` 树，这两个查找树速度差不多，`AVLRecursionMap` 是递归版本的 `AVL` 树（效果差不要使用）。
+其中 `GolangMap` 是内置 `map`，使用空间换时间，其速度是最快的。`RBTMap` 是非递归版本的标准红黑树，`AVLMap` 是非递归版本的 `AVL` 树，这两个查找树速度差不多。注意⚠️：`AVLRecursionMap` 是递归版本的 `AVL` 树，主要用来教学用，容易理解，效果差不要使用。
 
 如果对程序内存使用比较苛刻，在存储大量键值对情况下，不想浪费内存，可以使用二叉查找树实现的 `Map`。因为拉链法实现的 `golang map` 速度肯定更快，如果资源充足，直接使用官方 `map` 即可。
 
